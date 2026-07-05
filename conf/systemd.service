@@ -20,7 +20,9 @@ Environment="PORT=__PORT__"
 # Full external URL of the app; required by adapter-node for CSRF/Origin checks.
 Environment="ORIGIN=https://__DOMAIN__"
 # Do not limit request body size at the node level (nginx also sets client_max_body_size 0).
-Environment="BODY_SIZE_LIMIT=0"
+# NB: adapter-node treats 0 as a literal 0-byte limit (rejecting every request with a
+# body, e.g. login/register → 413). "Infinity" is the value that disables the limit.
+Environment="BODY_SIZE_LIMIT=Infinity"
 
 # Application configuration is loaded from the env file (secrets + toggles).
 EnvironmentFile=__INSTALL_DIR__/.env
