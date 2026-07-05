@@ -4,14 +4,9 @@
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
-# Fetch the Materialious source, keep only the app (in the 'materialious/' subdir),
-# and apply the required patch for the PostgreSQL backend.
-#
-# Upstream declares the User.id column as `DataTypes.UUIDV4`. UUIDV4 is a default-value
-# generator, not a column type: PostgreSQL rejects it ("type uuidv4 does not exist"),
-# so sequelize.sync() fails and every request returns 500. SQLite silently tolerates it,
-# which is why upstream appears to work with its default SQLite config. We rewrite it to
-# a real UUID column with UUIDV4 as the default value.
+# Fetch the Materialious source and keep only the app (in the 'materialious/' subdir).
+# The app's source is used verbatim — no patching — since the SQLite backend it was
+# designed around is what we run.
 materialious_setup_source() {
     local tmpdir
     tmpdir="$(mktemp -d)"
@@ -25,12 +20,6 @@ materialious_setup_source() {
     cp -a "$tmpdir/materialious/." "$install_dir/"
     ynh_safe_rm "$tmpdir"
 
-    # Fix the upstream PostgreSQL incompatibility (see comment above).
-    ynh_replace \
-        --match="type: DataTypes.UUIDV4," \
-        --replace="type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4," \
-        --file="$install_dir/src/lib/server/database.ts"
-
     chown -R "$app:www-data" "$install_dir"
 }
 
@@ -43,6 +32,15 @@ materialious_build() {
             PUBLIC_BUILD_WITH_BACKEND=true \
             npm_config_cache="$install_dir/.npm" \
             npm ci
+
+        # Rebuild the sqlite3 native binding from source. The binary published on npm is
+        # linked against a newer glibc (2.38) than Debian 12 provides (2.36), so the
+        # prebuilt fetched by `npm ci` fails to load at runtime (ERR_DLOPEN_FAILED).
+        # npm's script gating also prevents `npm ci`/`npm rebuild` from compiling it, so
+        # we invoke node-gyp directly inside the package.
+        ynh_hide_warnings ynh_exec_as_app env \
+            npm_config_cache="$install_dir/.npm" \
+            bash -c 'cd "$0/node_modules/sqlite3" && ../.bin/node-gyp rebuild' "$install_dir"
 
         ynh_hide_warnings ynh_exec_as_app env \
             PUBLIC_BUILD_WITH_BACKEND=true \

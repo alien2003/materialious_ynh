@@ -29,6 +29,9 @@ loaded by the systemd service. The two "Accounts" values are managed through the
 Panel; other values (secrets, database URI, backend/auth mode) are generated from the app
 settings and should not be edited by hand.
 
+The SQLite database file is at `/home/yunohost.app/materialious/materialious.db`. It is
+included in YunoHost backups (as part of the app's data directory).
+
 ## Invidious backend
 
 Materialious needs an Invidious instance to talk to. You can set a default one in the

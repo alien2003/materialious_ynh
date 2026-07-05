@@ -14,14 +14,15 @@ ynh_print_info "Declaring files to be backed up..."
 # BACKUP THE APP MAIN DIR
 #=================================================
 
-# Contains the built app, node_modules and the .env file (which holds COOKIE_SECRET and
-# the DB URI). Backing it up in full makes restore self-contained (no rebuild needed).
+# Contains the built app, node_modules and the .env file (which holds COOKIE_SECRET).
+# Backing it up in full makes restore self-contained (no rebuild needed).
 ynh_backup "$install_dir"
 
 #=================================================
 # BACKUP THE DATA DIR
 #=================================================
 
+# Holds the SQLite database file (materialious.db) — all user data lives here.
 ynh_backup "$data_dir"
 
 #=================================================
@@ -35,13 +36,6 @@ ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup "/etc/logrotate.d/$app"
 
 ynh_backup "/var/log/$app/"
-
-#=================================================
-# BACKUP THE POSTGRESQL DATABASE
-#=================================================
-ynh_print_info "Backing up the PostgreSQL database..."
-
-ynh_psql_dump_db > db.sql
 
 #=================================================
 # END OF SCRIPT

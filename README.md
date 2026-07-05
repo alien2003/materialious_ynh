@@ -12,8 +12,8 @@ learn how to install it.*
 Materialious is a modern Material Design front-end for YouTube / Invidious.
 
 This package runs it in **full backend mode** with its own account system on top of a
-**PostgreSQL** database (subscriptions, history and settings stored server-side,
-end-to-end encrypted by the app).
+**SQLite** database (subscriptions, history and settings stored server-side,
+end-to-end encrypted by the app). The app source is used **unmodified**.
 
 **Shipped version:** 1.17.2~ynh1
 
@@ -29,8 +29,9 @@ See the upstream project: <https://github.com/Materialious/Materialious>
   YunoHost level and enforces authentication itself.
 - **Registration** is disabled by default. Toggle it from the app's **Config Panel** to
   create accounts, then turn it back off. See [the admin doc](./doc/ADMIN.md).
-- The package applies a small **patch** to the app so the PostgreSQL backend works
-  (upstream declares a column with `DataTypes.UUIDV4`, which PostgreSQL rejects).
+- The package compiles the `sqlite3` native module from source (its published prebuilt
+  binary requires a newer glibc than Debian 12 provides). This only touches the app's
+  dependencies — the Materialious source itself is left untouched.
 
 ## Documentation and resources
 

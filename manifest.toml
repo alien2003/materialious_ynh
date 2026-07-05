@@ -64,13 +64,10 @@ ram.runtime = "400M"
     [resources.ports]
 
     [resources.apt]
-    # postgresql: the database backend.
-    # build-essential + python3: some npm dependencies (e.g. sqlite3) may compile
-    # native bindings from source when no prebuilt binary exists for Node 24.
-    packages = "postgresql, build-essential, python3"
-
-    [resources.database]
-    type = "postgresql"
+    # build-essential + python3: needed to (re)compile the sqlite3 native binding from
+    # source. Its published prebuilt binary is linked against a newer glibc than the one
+    # shipped by Debian 12 (YunoHost 12), so we must build it locally. See scripts/_common.sh.
+    packages = "build-essential, python3"
 
     [resources.nodejs]
     version = "24"
