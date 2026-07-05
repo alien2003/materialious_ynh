@@ -5,8 +5,9 @@ version = "1.0"
 [main]
 name.en = "Configuration"
 
-# Restart the app after applying so the new environment is picked up.
-services = ["__APP__"]
+# NB: the service restart is handled by scripts/config (ynh_app_config_apply), which
+# regenerates the .env and restarts with a readiness wait. We intentionally do not list
+# `services` here to avoid a second, non-waiting restart (which briefly 502s).
 
     [main.accounts]
     name.en = "Accounts"
