@@ -45,9 +45,9 @@ Send your pull request to the packaging repository.
 To try the testing branch, please proceed like that:
 
 ```bash
-sudo yunohost app install https://github.com/YOURORG/materialious_ynh/tree/testing --debug
+sudo yunohost app install https://github.com/alien2003/materialious_ynh/tree/testing --debug
 # or
-sudo yunohost app upgrade materialious -u https://github.com/YOURORG/materialious_ynh/tree/testing --debug
+sudo yunohost app upgrade materialious -u https://github.com/alien2003/materialious_ynh/tree/testing --debug
 ```
 
 **More info regarding app packaging:** <https://yunohost.org/packaging_apps>
