@@ -7,7 +7,7 @@ name = "Materialious"
 description.en = "Modern material design interface for YouTube and Invidious"
 description.fr = "Interface material design moderne pour YouTube et Invidious"
 
-version = "1.17.2~ynh2"
+version = "1.17.2~ynh3"
 
 maintainers = ["alien2003"]
 

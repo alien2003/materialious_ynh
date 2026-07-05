@@ -22,6 +22,10 @@ ynh_app_setting_set --key=cookie_secret --value="$cookie_secret"
 registration_allowed="false"
 ynh_app_setting_set --key=registration_allowed --value="$registration_allowed"
 
+# Proof-of-work captcha is ON by default; can be disabled from the Config Panel.
+captcha_disabled="false"
+ynh_app_setting_set --key=captcha_disabled --value="$captcha_disabled"
+
 # Comma-separated list of app usernames with admin privileges (empty by default).
 admin_usernames=""
 ynh_app_setting_set --key=admin_usernames --value="$admin_usernames"

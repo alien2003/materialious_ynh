@@ -12,6 +12,10 @@ create your account(s):
 You can grant admin rights to one or more accounts via the **Admin usernames** field in
 the same panel (comma-separated, e.g. `alice,bob`).
 
+The same Config Panel has a **Disable the proof-of-work captcha** switch. The captcha only
+works over HTTPS and can be cumbersome; turning it off removes it from login/registration
+(the built-in rate-limiting of 5 attempts/minute on those endpoints still applies).
+
 ## Important notes
 
 - **This app takes the whole (sub)domain.** It is built to run only at the root of a

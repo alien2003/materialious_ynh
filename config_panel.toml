@@ -20,6 +20,14 @@ name.en = "Configuration"
         default = "false"
         help.en = "Materialious registration is normally closed. Turn this ON to create your account(s), then turn it back OFF."
 
+        [main.accounts.captcha_disabled]
+        ask.en = "Disable the proof-of-work captcha"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        default = "false"
+        help.en = "Materialious shows a proof-of-work captcha on login/registration. Turn this ON to disable it (rate-limiting on login/register still applies)."
+
         [main.accounts.admin_usernames]
         ask.en = "Admin usernames"
         type = "string"

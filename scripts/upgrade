@@ -21,6 +21,7 @@ ynh_script_progression "Ensuring downward compatibility..."
 
 # Make sure the settings introduced by this package exist on older installs.
 ynh_app_setting_set_default --key=registration_allowed --value="false"
+ynh_app_setting_set_default --key=captcha_disabled --value="false"
 ynh_app_setting_set_default --key=admin_usernames --value=""
 # COOKIE_SECRET must never be regenerated on upgrade (it would log everyone out).
 if [ -z "${cookie_secret:-}" ]; then
