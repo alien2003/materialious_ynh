@@ -1,0 +1,76 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/manifest.v2.schema.json
+
+packaging_format = 2
+
+id = "materialious"
+name = "Materialious"
+description.en = "Modern material design interface for YouTube and Invidious"
+description.fr = "Interface material design moderne pour YouTube et Invidious"
+
+version = "1.17.2~ynh1"
+
+maintainers = ["alien2003"]
+
+[upstream]
+license = "AGPL-3.0-only"
+website = "https://github.com/Materialious/Materialious"
+code = "https://github.com/Materialious/Materialious"
+
+[integration]
+yunohost = ">= 12.1.17"
+helpers_version = "2.1"
+architectures = ["amd64", "arm64"]
+multi_instance = false
+
+# The app has its own internal account system; it does not authenticate against
+# YunoHost's LDAP nor use the YunoHost SSO portal.
+ldap = "not_relevant"
+sso = "not_relevant"
+
+# Node build (node_modules + build output) is fairly heavy.
+disk = "800M"
+ram.build = "2G"
+ram.runtime = "400M"
+
+[install]
+    [install.domain]
+    # Materialious is built with base='' and only works at the root of a (sub)domain.
+    # Declaring only 'domain' (and no 'path') marks this app as full-domain.
+    type = "domain"
+
+    [install.init_main_permission]
+    # The app enforces its own authentication, so at the YunoHost/SSOwat level it must
+    # be reachable by visitors (otherwise the SSO portal would block the app's own accounts).
+    type = "group"
+    default = "visitors"
+    help.en = "Materialious manages its own accounts. Keep this on 'visitors' so its login page is reachable; access is still gated by the app itself."
+
+[resources]
+
+    [resources.sources.main]
+    url = "https://github.com/Materialious/Materialious/archive/refs/tags/1.17.2.tar.gz"
+    sha256 = "3442b2c4f5a205b8647726e8403bc444d23e0b6215798126d818860fb7f37f97"
+    autoupdate.strategy = "latest_github_tag"
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.data_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.ports]
+
+    [resources.apt]
+    # postgresql: the database backend.
+    # build-essential + python3: some npm dependencies (e.g. sqlite3) may compile
+    # native bindings from source when no prebuilt binary exists for Node 24.
+    packages = "postgresql, build-essential, python3"
+
+    [resources.database]
+    type = "postgresql"
+
+    [resources.nodejs]
+    version = "24"

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_abort_if_errors
+
+#=================================================
+# CUSTOM APPLY: re-render the env file and restart
+#=================================================
+# The config panel options (registration_allowed, admin_usernames) are stored as app
+# settings by the default apply. We then regenerate $install_dir/.env from those settings
+# so the systemd service (which reads it via EnvironmentFile) picks up the new values.
+ynh_app_config_apply() {
+    _ynh_app_config_apply
+
+    materialious_render_env
+
+    ynh_systemctl --service="$app" --action="restart" \
+        --wait_until="Listening on" --log_path="/var/log/$app/$app.log" --timeout=60
+}
+
+ynh_app_config_run "$1"

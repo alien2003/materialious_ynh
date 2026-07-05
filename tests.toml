@@ -1,0 +1,9 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/tests.v1.schema.json
+
+test_format = 1.0
+
+[default]
+
+    # The app is full-domain (root only) and has no subpath / multi-instance variants,
+    # so the default deduced tests (install at root, backup/restore, upgrade) are enough.
+    exclude = ["install.subdir", "install.multi", "install.nourl"]

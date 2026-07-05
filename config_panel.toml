@@ -1,0 +1,27 @@
+#:schema https://github.com/YunoHost/apps/raw/main/schemas/config_panel.v1.schema.json
+
+version = "1.0"
+
+[main]
+name.en = "Configuration"
+
+# Restart the app after applying so the new environment is picked up.
+services = ["__APP__"]
+
+    [main.accounts]
+    name.en = "Accounts"
+
+        [main.accounts.registration_allowed]
+        ask.en = "Allow new account registration"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        default = "false"
+        help.en = "Materialious registration is normally closed. Turn this ON to create your account(s), then turn it back OFF."
+
+        [main.accounts.admin_usernames]
+        ask.en = "Admin usernames"
+        type = "string"
+        default = ""
+        optional = true
+        help.en = "Comma-separated list of Materialious usernames granted admin privileges, e.g. alice,bob"

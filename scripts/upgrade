@@ -1,0 +1,80 @@
+#!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Stopping $app's systemd service..."
+
+ynh_systemctl --service="$app" --action="stop"
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression "Ensuring downward compatibility..."
+
+# Make sure the settings introduced by this package exist on older installs.
+ynh_app_setting_set_default --key=registration_allowed --value="false"
+ynh_app_setting_set_default --key=admin_usernames --value=""
+# COOKIE_SECRET must never be regenerated on upgrade (it would log everyone out).
+if [ -z "${cookie_secret:-}" ]; then
+    cookie_secret=$(ynh_string_random --length=32)
+    ynh_app_setting_set --key=cookie_secret --value="$cookie_secret"
+fi
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression "Upgrading source files..."
+
+materialious_setup_source
+
+#=================================================
+# REBUILD THE APP
+#=================================================
+ynh_script_progression "Installing dependencies and rebuilding Materialious (this can take a while)..."
+
+materialious_build
+
+#=================================================
+# UPDATE CONFIGURATION
+#=================================================
+ynh_script_progression "Updating $app's configuration..."
+
+materialious_render_env
+
+#=================================================
+# REAPPLY SYSTEM CONFIGURATION
+#=================================================
+ynh_script_progression "Upgrading system configurations related to $app..."
+
+mkdir -p "/var/log/$app"
+chown "$app:$app" "/var/log/$app"
+
+ynh_config_add_systemd
+
+ynh_config_add_nginx
+
+ynh_config_add_logrotate
+
+yunohost service add "$app" --description="Material design front-end for YouTube/Invidious" --log="/var/log/$app/$app.log"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Starting $app's systemd service..."
+
+ynh_systemctl --service="$app" --action="start" \
+    --wait_until="Listening on" --log_path="/var/log/$app/$app.log" --timeout=60
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Upgrade of $app completed"

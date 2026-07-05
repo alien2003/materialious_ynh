@@ -1,0 +1,4 @@
+# Nothing generated should live in the package repo.
+*.swp
+*~
+.DS_Store

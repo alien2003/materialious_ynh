@@ -1,0 +1,82 @@
+#!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
+
+# Secret used by the app to sign session cookies. Must be >= 16 chars and must stay
+# stable across upgrades (regenerating it would log everyone out). Kept in settings so
+# it is backed up / restored.
+cookie_secret=$(ynh_string_random --length=32)
+ynh_app_setting_set --key=cookie_secret --value="$cookie_secret"
+
+# Account registration is OFF by default. Flip it on from the Config Panel to create
+# your account(s), then flip it back off.
+registration_allowed="false"
+ynh_app_setting_set --key=registration_allowed --value="$registration_allowed"
+
+# Comma-separated list of app usernames with admin privileges (empty by default).
+admin_usernames=""
+ynh_app_setting_set --key=admin_usernames --value="$admin_usernames"
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression "Setting up source files..."
+
+materialious_setup_source
+
+#=================================================
+# BUILD THE APP
+#=================================================
+ynh_script_progression "Installing dependencies and building Materialious (this can take a while)..."
+
+materialious_build
+
+#=================================================
+# APP INITIAL CONFIGURATION
+#=================================================
+ynh_script_progression "Adding $app's configuration..."
+
+materialious_render_env
+
+#=================================================
+# SYSTEM CONFIGURATION
+#=================================================
+ynh_script_progression "Adding system configurations related to $app..."
+
+# Log directory for the systemd service.
+mkdir -p "/var/log/$app"
+chown "$app:$app" "/var/log/$app"
+
+# Create a dedicated systemd config.
+ynh_config_add_systemd
+
+# Create a dedicated NGINX config.
+ynh_config_add_nginx
+
+# Manage the app's log file with logrotate.
+ynh_config_add_logrotate
+
+yunohost service add "$app" --description="Material design front-end for YouTube/Invidious" --log="/var/log/$app/$app.log"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Starting $app's systemd service..."
+
+ynh_systemctl --service="$app" --action="start" \
+    --wait_until="Listening on" --log_path="/var/log/$app/$app.log" --timeout=60
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Installation of $app completed"
